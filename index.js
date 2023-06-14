@@ -5,21 +5,19 @@ const app = express();
 const mobiles = JSON.parse(fs.readFileSync('./data/mobiles.json'));
 app.use(express.json());
 
-// SEND TO BROWSER
-app.get('/api/v1/mobiles', (req, res) => {
+//ROUTE HANDLER FUNCTIONS
+const getAllMobiles = (req, res) => {
     res.status(200).json({
         status: "success",
         data: {
             mobiles: mobiles
         }
     });
-});
-
-// ADD NEW ITEM
-app.post('/api/v1/mobiles', (req, res) => {
+}
+//CREATE MOBILE
+const createMobile = (req, res) => {
     const newId = mobiles[mobiles.length - 1].id + 1;
     const newMobile = { id: newId, ...req.body };
-
     mobiles.push(newMobile);
     fs.writeFile('./data/mobiles.json', JSON.stringify(mobiles), (err) => {
         res.status(201).json({
@@ -29,10 +27,9 @@ app.post('/api/v1/mobiles', (req, res) => {
             }
         });
     });
-});
-
-// FILTER BY ID
-app.get('/api/v1/mobiles/:id', (req, res) => {
+}
+//GET MOBILE
+const getMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileById = mobiles.find(mobile => mobile.id === id);
 
@@ -42,17 +39,15 @@ app.get('/api/v1/mobiles/:id', (req, res) => {
             message: `No data found with id: ${id}`
         });
     }
-
     res.status(200).json({
         status: "success",
         data: {
             mobile: mobileById
         }
     });
-});
-
-// UPDATE USING PATCH BY ID
-app.patch('/api/v1/mobiles/:id', (req, res) => {
+}
+//UPDATE MOBILE
+const updateMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileToUpdate = mobiles.find(mobile => mobile.id === id);
 
@@ -73,10 +68,9 @@ app.patch('/api/v1/mobiles/:id', (req, res) => {
             }
         });
     });
-});
-
-// DELETE ITEM BY ID
-app.delete('/api/v1/mobiles/:id', (req, res) => {
+}
+//DELETE MOBILE
+const deleteMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileToDelete = mobiles.find(mobile => mobile.id === id);
 
@@ -98,7 +92,21 @@ app.delete('/api/v1/mobiles/:id', (req, res) => {
             }
         });
     });
-});
+}
+
+// app.get('/api/v1/mobiles', getAllMobiles);
+// app.post('/api/v1/mobiles', createMobile);
+// app.get('/api/v1/mobiles/:id', getMobile);
+// app.patch('/api/v1/mobiles/:id',updateMobile);
+// app.delete('/api/v1/mobiles/:id', deleteMobile);
+
+app.route('/api/v1/mobiles')
+    .get(getAllMobiles)
+    .post(createMobile)
+app.route('/api/v1/mobiles/:id')
+    .get(getMobile)
+    .patch(updateMobile)
+    .delete(deleteMobile)
 
 // CREATE SERVER
 const PORT = 8001;
