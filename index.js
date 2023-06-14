@@ -93,7 +93,7 @@ const deleteMobile = (req, res) => {
         });
     });
 }
-
+//
 // app.get('/api/v1/mobiles', getAllMobiles);
 // app.post('/api/v1/mobiles', createMobile);
 // app.get('/api/v1/mobiles/:id', getMobile);
