@@ -2,6 +2,20 @@ const fs = require('fs');
 
 const mobiles = JSON.parse(fs.readFileSync('./data/mobiles.json'));
 
+
+exports.checkId = (req, res, next, value) => {
+    const id = value * 1;
+    const mobile = mobiles.find(mobile => mobile.id === id);
+    if (!mobile) {
+        return res.status(404).json({
+            status: "failed",
+            message: `No mobile found with id: ${id}`
+        });
+    }
+
+    next();
+}
+
 //ROUTE HANDLER FUNCTIONS
 exports.getAllMobiles = (req, res) => {
     res.status(200).json({
@@ -30,12 +44,12 @@ exports.getMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileById = mobiles.find(mobile => mobile.id === id);
 
-    if (!mobileById) {
-        return res.status(404).json({
-            status: "fail",
-            message: `No data found with id: ${id}`
-        });
-    }
+    // if (!mobileById) {
+    //     return res.status(404).json({
+    //         status: "fail",
+    //         message: `No data found with id: ${id}`
+    //     });
+    // }
     res.status(200).json({
         status: "success",
         data: {
@@ -48,12 +62,12 @@ exports.updateMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileToUpdate = mobiles.find(mobile => mobile.id === id);
 
-    if (!mobileToUpdate) {
-        return res.status(404).json({
-            status: "failed",
-            message: `No mobile found with id: ${id}`
-        });
-    }
+    // if (!mobileToUpdate) {
+    //     return res.status(404).json({
+    //         status: "failed",
+    //         message: `No mobile found with id: ${id}`
+    //     });
+    // }
 
     Object.assign(mobileToUpdate, req.body); // TO UPDATE
 
@@ -71,12 +85,12 @@ exports.deleteMobile = (req, res) => {
     const id = req.params.id * 1;
     const mobileToDelete = mobiles.find(mobile => mobile.id === id);
 
-    if (!mobileToDelete) {
-        return res.status(404).json({
-            status: "failed",
-            message: `No mobile found with id: ${id}`
-        });
-    }
+    // if (!mobileToDelete) {
+    //     return res.status(404).json({
+    //         status: "failed",
+    //         message: `No mobile found with id: ${id}`
+    //     });
+    // }
 
     const index = mobiles.indexOf(mobileToDelete);
     mobiles.splice(index, 1); // DELETE ITEM

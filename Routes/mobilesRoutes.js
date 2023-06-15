@@ -3,7 +3,9 @@ const app = express();
 const mobilesController = require('../Controllers/mobilesController')
 const router = express.Router();
 
-const {getAllMobiles, createMobile,getMobile,updateMobile,deleteMobile} = mobilesController;
+router.param('id', mobilesController.checkId)
+
+const { getAllMobiles, createMobile, getMobile, updateMobile, deleteMobile } = mobilesController;
 
 router.route('/')
     .get(getAllMobiles)
