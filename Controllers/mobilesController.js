@@ -16,6 +16,18 @@ exports.checkId = (req, res, next, value) => {
     next();
 }
 
+exports.validateBody = (req, res, next) => {
+    const { name, color, ROM, price, modeName, modelNumber, size, camera, Description, productImage } = req.body
+    if (!name || !color || !ROM || !price || !modeName || !modelNumber || !size || !camera || !Description || !productImage) {
+        return res.status(400).json({
+            status: "failed",
+            message: "Not a valid data"
+        })
+    }
+
+    next()
+}
+
 //ROUTE HANDLER FUNCTIONS
 exports.getAllMobiles = (req, res) => {
     res.status(200).json({
