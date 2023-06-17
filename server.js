@@ -9,7 +9,7 @@ mongoose.connect(process.env.CONN_STR, {
     console.log("DB Connection Successfull");
     // console.log(conn);
 }).catch((err) => {
-    console.log("Some error occured");
+    console.log(err.message);
 })
 
 // CREATE SERVER
