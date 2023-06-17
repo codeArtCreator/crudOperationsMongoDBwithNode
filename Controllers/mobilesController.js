@@ -1,118 +1,96 @@
 const fs = require('fs');
+const Mobile = require('../Models/mobileModel');
 
-const mobiles = JSON.parse(fs.readFileSync('./data/mobiles.json'));
-
-
-exports.checkId = (req, res, next, value) => {
-    const id = value * 1;
-    const mobile = mobiles.find(mobile => mobile.id === id);
-    if (!mobile) {
-        return res.status(404).json({
-            status: "failed",
-            message: `No mobile found with id: ${id}`
-        });
+//ROUTE HANDLER FUNCTIONS
+//GET ALL MOBILES
+exports.getAllMobiles = async (req, res) => {
+    try {
+        const mobile = await Mobile.find();
+        res.status(201).json({
+            status: "success",
+            length: mobile.length,
+            data: {
+                mobile
+            }
+        })
     }
-
-    next();
-}
-
-exports.validateBody = (req, res, next) => {
-    const { name, color, ROM, price, modeName, modelNumber, size, camera, Description, productImage } = req.body
-    if (!name || !color || !ROM || !price || !modeName || !modelNumber || !size || !camera || !Description || !productImage) {
-        return res.status(400).json({
-            status: "failed",
-            message: "Not a valid data"
+    catch (err) {
+        res.status(400).json({
+            status: "fail",
+            message: err.message
         })
     }
 
-    next()
-}
-
-//ROUTE HANDLER FUNCTIONS
-exports.getAllMobiles = (req, res) => {
-    res.status(200).json({
-        status: "success",
-        data: {
-            mobiles: mobiles
-        }
-    });
 }
 //CREATE MOBILE
-exports.createMobile = (req, res) => {
-    const newId = mobiles[mobiles.length - 1].id + 1;
-    const newMobile = { id: newId, ...req.body };
-    mobiles.push(newMobile);
-    fs.writeFile('./data/mobiles.json', JSON.stringify(mobiles), (err) => {
+exports.createMobile = async (req, res) => {
+    try {
+        const mobile = await Mobile.create(req.body);
         res.status(201).json({
             status: "success",
             data: {
-                mobile: newMobile,
+                mobile
             }
-        });
-    });
+        })
+    }
+    catch (err) {
+        res.status(400).json({
+            status: "fail",
+            message: err.message
+        })
+    }
+
 }
 //GET MOBILE
-exports.getMobile = (req, res) => {
-    const id = req.params.id * 1;
-    const mobileById = mobiles.find(mobile => mobile.id === id);
-
-    // if (!mobileById) {
-    //     return res.status(404).json({
-    //         status: "fail",
-    //         message: `No data found with id: ${id}`
-    //     });
-    // }
-    res.status(200).json({
-        status: "success",
-        data: {
-            mobile: mobileById
-        }
-    });
+exports.getMobile = async (req, res) => {
+    try {
+        // const mobile = await Mobile.find({_id: req.params.id});
+        const mobile = await Mobile.findById(req.params.id)
+        res.status(201).json({
+            status: "success",
+            data: {
+                mobile
+            }
+        })
+    }
+    catch (err) {
+        res.status(400).json({
+            status: "fail",
+            message: err.message
+        })
+    }
 }
 //UPDATE MOBILE
-exports.updateMobile = (req, res) => {
-    const id = req.params.id * 1;
-    const mobileToUpdate = mobiles.find(mobile => mobile.id === id);
-
-    // if (!mobileToUpdate) {
-    //     return res.status(404).json({
-    //         status: "failed",
-    //         message: `No mobile found with id: ${id}`
-    //     });
-    // }
-
-    Object.assign(mobileToUpdate, req.body); // TO UPDATE
-
-    fs.writeFile('./data/mobiles.json', JSON.stringify(mobiles), (err) => {
-        res.status(200).json({
+exports.updateMobile = async (req, res) => {
+    try {
+        const updatedMobile = await Mobile.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        res.status(201).json({
             status: "success",
             data: {
-                mobile: mobileToUpdate
+                updatedMobile
             }
-        });
-    });
+        })
+    }
+    catch (err) {
+        res.status(400).json({
+            status: "fail",
+            message: err.message
+        })
+    }
 }
 //DELETE MOBILE
-exports.deleteMobile = (req, res) => {
-    const id = req.params.id * 1;
-    const mobileToDelete = mobiles.find(mobile => mobile.id === id);
-
-    // if (!mobileToDelete) {
-    //     return res.status(404).json({
-    //         status: "failed",
-    //         message: `No mobile found with id: ${id}`
-    //     });
-    // }
-
-    const index = mobiles.indexOf(mobileToDelete);
-    mobiles.splice(index, 1); // DELETE ITEM
-
-    fs.writeFile('./data/mobiles.json', JSON.stringify(mobiles), (err) => {
-        res.status(204).json({
+exports.deleteMobile = async (req, res) => {
+    try {
+        await Mobile.findByIdAndDelete(req.params.id);
+        res.status(200).json({
             status: "success",
-            data: {
-                mobile: null
-            }
-        });
-    });
+            message: "File deleted successfully"
+        })
+    }
+    catch (err) {
+        res.status(400).json({
+            status: "fail",
+            message: err.message
+        })
+    }
 }

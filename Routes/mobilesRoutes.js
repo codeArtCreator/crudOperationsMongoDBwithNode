@@ -3,13 +3,11 @@ const app = express();
 const mobilesController = require('../Controllers/mobilesController')
 const router = express.Router();
 
-router.param('id', mobilesController.checkId)
-
-const { getAllMobiles, createMobile, getMobile, updateMobile, deleteMobile, validateBody } = mobilesController;
+const { getAllMobiles, createMobile, getMobile, updateMobile, deleteMobile } = mobilesController;
 
 router.route('/')
     .get(getAllMobiles)
-    .post(validateBody, createMobile)
+    .post(createMobile)
 
 router.route('/:id')
     .get(getMobile)
